@@ -28,6 +28,11 @@ func (module BestEffortBroadcast_Module) Init(addresses []string, ports []string
 		Ind: make(chan PP2PLink.PP2PLink_Message) }
 
 	module.Pp2plink.Init(addresses[0], ports[0]);
+	module.Start()
+
+}
+
+func (module BestEffortBroadcast_Module) Start() {
 
 	go func () {
 
@@ -54,6 +59,7 @@ func (module BestEffortBroadcast_Module) Broadcast(message BestEffortBroadcast_M
 	}
 
 }
+
 func (module BestEffortBroadcast_Module) Deliver(message BestEffortBroadcast_Message) {
 
 	fmt.Println("Received: " + message.Data + " from " + message.From)
@@ -68,6 +74,7 @@ func BEB2PP2PLink(message BestEffortBroadcast_Message) PP2PLink.PP2PLink_Message
 		Message: message.Data }
 
 }
+
 func PP2PLink2BEB(message PP2PLink.PP2PLink_Message) BestEffortBroadcast_Message {
 
 	return BestEffortBroadcast_Message{
