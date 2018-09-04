@@ -40,9 +40,12 @@ func (module PP2PLink) Start(address string, port string) {
 			len, _ := conn.Read(buf)
 			conn.Close()
 	
+			content := make([]byte, len)
+			copy(content, buf)
+
 			msg := PP2PLink_Message {
 				Address: conn.RemoteAddr().String(),
-				Message: string(buf[len:]) }
+				Message: string(content) }
 
 			module.Ind <- msg
 
