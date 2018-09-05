@@ -1,33 +1,31 @@
-package main
+package BestEffortBroadcast
 
-import "os"
 import "fmt"
 import PP2PLink "../PP2PLink"
 
-type BestEffortBroadcast_Message struct {
+type BestEffortBroadcast_Req_Message struct {
+	Addresses []string
+	Message string
+}
+
+type BestEffortBroadcast_Ind_Message struct {
 	From string
-	Data string
+	Message string
 }
 
 type BestEffortBroadcast_Module struct {
-	Req chan BestEffortBroadcast_Message
-	Ind chan BestEffortBroadcast_Message
-	Addresses []string
-	Ports []string
-
+	Ind chan BestEffortBroadcast_Ind_Message
+	Req chan BestEffortBroadcast_Req_Message
 	Pp2plink PP2PLink.PP2PLink
 }
 
-func (module BestEffortBroadcast_Module) Init(addresses []string, ports []string) {
+func (module BestEffortBroadcast_Module) Init(address string) {
 
 	fmt.Println("Init BEB!")
-	module.Ports = ports
-	module.Addresses = addresses
 	module.Pp2plink = PP2PLink.PP2PLink{
-		Req: make(chan PP2PLink.PP2PLink_Message),
-		Ind: make(chan PP2PLink.PP2PLink_Message) }
-
-	module.Pp2plink.Init(addresses[0], ports[0]);
+		Req: make(chan PP2PLink.PP2PLink_Req_Message),
+		Ind: make(chan PP2PLink.PP2PLink_Ind_Message) }
+	module.Pp2plink.Init(address);
 	module.Start()
 
 }
@@ -35,76 +33,75 @@ func (module BestEffortBroadcast_Module) Init(addresses []string, ports []string
 func (module BestEffortBroadcast_Module) Start() {
 
 	go func () {
-
 		for {
 			select{
-			case y:= <- module.Req:
+			case y := <- module.Req:
 				module.Broadcast(y);
-			case y:= <- module.Pp2plink.Ind:
-				module.Deliver(PP2PLink2BEB(y)); // Deserializar Isso
+			case y := <- module.Pp2plink.Ind:
+				module.Deliver(PP2PLink2BEB(y));
 			}
 		}
-
 	}()
 
 }
 
-func (module BestEffortBroadcast_Module) Broadcast(message BestEffortBroadcast_Message) {
+func (module BestEffortBroadcast_Module) Broadcast(message BestEffortBroadcast_Req_Message) {
 
-	fmt.Println("Broadcast: " + message.Data)
-	for i := 0; i < len(module.Addresses); i++ {
-		fmt.Println("Here!")
-		message.From = module.Addresses[i] + ":" + module.Ports[i]
-		module.Pp2plink.Req <- BEB2PP2PLink(message);
+	for i := 0; i < len(message.Addresses); i++ {
+		msg := BEB2PP2PLink(message)
+		msg.To = message.Addresses[i];
+		module.Pp2plink.Req <- msg;
+		fmt.Println("Sent to " + message.Addresses[i])
 	}
 
 }
 
-func (module BestEffortBroadcast_Module) Deliver(message BestEffortBroadcast_Message) {
+func (module BestEffortBroadcast_Module) Deliver(message BestEffortBroadcast_Ind_Message) {
 
-	fmt.Println("Received: " + message.Data + " from " + message.From)
+	fmt.Println("Received '" + message.Message + "' from " + message.From)
 	module.Ind <- message
+	fmt.Println("# End BEB Received")
 
 }
 
-func BEB2PP2PLink(message BestEffortBroadcast_Message) PP2PLink.PP2PLink_Message {
+func BEB2PP2PLink(message BestEffortBroadcast_Req_Message) PP2PLink.PP2PLink_Req_Message {
 
-	return PP2PLink.PP2PLink_Message{
-		Address: message.From,
-		Message: message.Data }
-
-}
-
-func PP2PLink2BEB(message PP2PLink.PP2PLink_Message) BestEffortBroadcast_Message {
-
-	return BestEffortBroadcast_Message{
-		From: message.Address,
-		Data: message.Message }
+	return PP2PLink.PP2PLink_Req_Message{
+		To: message.Addresses[0],
+		Message: message.Message }
 
 }
 
+func PP2PLink2BEB(message PP2PLink.PP2PLink_Ind_Message) BestEffortBroadcast_Ind_Message {
 
+	return BestEffortBroadcast_Ind_Message{
+		From: message.From,
+		Message: message.Message }
+
+}
+
+/*
 func main() {
 
-	size := len(os.Args) / 2
-	addresses := make([]string, 0, size)
-	ports     := make([]string, 0, size)
-
-	for i := 1; i < len(os.Args); i += 2 {
-		addresses = append(addresses, os.Args[i])
-		ports     = append(ports, os.Args[i + 1])
+	if (len(os.Args) < 2) {
+		fmt.Println("Please specify at least one address:port!")
+		return
 	}
 
-	mod := BestEffortBroadcast_Module{
-		Req: make(chan BestEffortBroadcast_Message),
-		Ind: make(chan BestEffortBroadcast_Message) }
-	mod.Init(addresses, ports)
+	addresses := os.Args[1:]
+	fmt.Println(addresses)
 
-	msg := BestEffortBroadcast_Message{
-		From: addresses[0] + ":" + ports[0],
-		Data: "BATATA!" }
+	mod := BestEffortBroadcast_Module{
+		Req: make(chan BestEffortBroadcast_Req_Message),
+		Ind: make(chan BestEffortBroadcast_Ind_Message) }
+	mod.Init(addresses[0])
+
+	msg := BestEffortBroadcast_Req_Message{
+		Addresses: addresses,
+		Message: "BATATA!" }
 
 	yy := make(chan string)
 	mod.Req <- msg
 	<- yy
 }
+*/
