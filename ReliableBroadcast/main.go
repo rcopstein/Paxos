@@ -130,5 +130,15 @@ func main() {
 
 	yy := make(chan string)
 	mod.Req <- msg
+	
+	
+	for {
+
+		y := <- mod.Ind
+		fmt.Println("mensagem chegou blah blah : " + y.Message)
+	}
+	
+	
+	
 	<- yy
 }
