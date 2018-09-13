@@ -128,13 +128,9 @@ func main() {
 		Sender: addresses[0],
 		Message: "BATATA!" }
 
-	yy := make(chan string)
 	mod.Req <- msg
-	
 	for {
 		y := <- mod.Ind
 		fmt.Println("mensagem chegou blah blah : " + y.Message)
 	}
-	
-	<- yy
 }
