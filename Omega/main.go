@@ -15,20 +15,16 @@ type Omega_Module struct {
 
 func Init() Omega_Module {
 
-	var module = Omega_Module{
-		Ind : make(chan Omega_Trust_Message),
-	}
-
+	var module = Omega_Module{ Ind : make(chan Omega_Trust_Message), }
+	go module.Start()
 	return module;
 
 }
 
 func (self Omega_Module) Start() {
-	go func() {
-		for {
-			var a= Members.Find_Random();
-			self.Ind <- Omega_Trust_Message{Member: a}
-			time.Sleep(2 * time.Second)
-		}
-	}()
+	for {
+		var a = Members.Find_Random();
+		self.Ind <- Omega_Trust_Message{Member: a}
+		time.Sleep(2 * time.Second)
+	}
 }

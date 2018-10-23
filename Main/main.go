@@ -3,7 +3,7 @@ package main
 import (
 	"../Members"
 	"../Omega"
-	"fmt"
+	"../PAXOS"
 )
 
 func addMembers() {
@@ -31,12 +31,9 @@ func main() {
 
 	addMembers();
 
-	var omega = Omega.Init()
-	omega.Start()
+	PAXOS.Init()
 
-	for {
-		var a = <- omega.Ind;
-		fmt.Print(a.Member.Name)
-	}
+	var omega = Omega.Init()
+	for { <- omega.Ind; }
 
 }
