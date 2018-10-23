@@ -1,4 +1,4 @@
-package main
+package ReliableBroadcast
 
 import "os"
 import "fmt"
@@ -105,7 +105,7 @@ func BEB2RB(message BEB.BestEffortBroadcast_Ind_Message) ReliableBroadcast_Ind_M
 
 }
 
-func main() {
+func main2() {
 
 	if (len(os.Args) < 2) {
 		fmt.Println("Please specify at least one address:port!")
