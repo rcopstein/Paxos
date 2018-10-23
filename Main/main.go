@@ -6,38 +6,37 @@ import (
 	"fmt"
 )
 
-func add_members() {
+func addMembers() {
 
 	Members.Add(Members.Member{
-		IP:   "127.0.0.1",
-		Port: 4000,
-		Nome: "1",
-	});
+		Address: "127.0.0.1:4000",
+		Name: "1",
+	})
 
 	Members.Add(Members.Member{
-		IP:   "127.0.0.1",
-		Port: 5000,
-		Nome: "2",
-	});
+		Address: "127.0.0.1:5000",
+		Name: "2",
+	})
 
 	Members.Add(Members.Member{
-		IP:   "127.0.0.1",
-		Port: 6000,
-		Nome: "3",
-	});
+		Address: "127.0.0.1:6000",
+		Name: "3",
+	})
+
+	Members.SetSelf("1")
 
 }
 
 func main() {
 
-	add_members();
+	addMembers();
 
 	var omega = Omega.Init()
 	omega.Start()
 
 	for {
 		var a = <- omega.Ind;
-		fmt.Print(a.Member.Nome)
+		fmt.Print(a.Member.Name)
 	}
 
 }

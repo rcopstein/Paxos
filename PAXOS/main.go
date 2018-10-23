@@ -11,6 +11,9 @@ const (
 
 type PAXOS_Module struct {
 
+	// SubModules
+	messages PAXOS_Messages_Module
+
 	// Persistent Variables
 	LastTried *int
 	Outcome *int
@@ -29,9 +32,9 @@ type PAXOS_Module struct {
 
 func Init() PAXOS_Module {
 
-	var mod = PAXOS_Module{
-		// Initialize Variables
-	}
+	var mod = PAXOS_Module{}
+	mod.messages = Init_Messages()
+
 	return mod;
 
 }

@@ -41,16 +41,14 @@ func (module PP2PLink) Start(address string) {
 
 			conn, err := listen.Accept()
 			if err != nil { continue }
-			len, _ := conn.Read(buf)
+
+			length, _ := conn.Read(buf)
 			conn.Close()
 	
-			content := make([]byte, len)
+			content := make([]byte, length)
 			copy(content, buf)
 
-			msg := PP2PLink_Ind_Message {
-				From: conn.RemoteAddr().String(),
-				Message: string(content) }
-
+			msg := PP2PLink_Ind_Message { Message: string(content) }
 			module.Ind <- msg
 
 		}

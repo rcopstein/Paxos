@@ -6,12 +6,20 @@ import (
 )
 
 type Member struct {
-	IP string
-	Port int
-	Nome string
+	Address string
+	Name    string
 }
 
+var self *Member;
 var l = list.New();
+
+func SetSelf(name string) {
+	self = Find(name);
+}
+
+func GetSelf() *Member {
+	return self;
+}
 
 func Add(memb Member) {
 	l.PushFront(memb);
@@ -35,7 +43,7 @@ func Find_Random() *Member {
 func Find(name string) *Member {
 	for e := l.Front(); e != nil; e = e.Next() {
 		var item = e.Value.(Member);
-		if (item.Nome == name) { return &item; }
+		if (item.Name == name) { return &item; }
 	}
 
 	return nil;
