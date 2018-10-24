@@ -2,6 +2,7 @@ package Members
 
 import (
 	"container/list"
+	"fmt"
 	"math/rand"
 )
 
@@ -47,4 +48,12 @@ func Find(name string) *Member {
 	}
 
 	return nil;
+}
+
+func ForEach(fun func(member Member)) {
+	for e := l.Front(); e != nil; e = e.Next() {
+		fmt.Println("Yes1!")
+		fun(e.Value.(Member))
+		fmt.Println("Yes2!")
+	}
 }
