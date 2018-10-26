@@ -4,6 +4,8 @@ import (
 	"../Members"
 	"../Omega"
 	"../PAXOS"
+	"fmt"
+	"os"
 )
 
 func addMembers() {
@@ -23,13 +25,22 @@ func addMembers() {
 		Name: "3",
 	})
 
-	Members.SetSelf("1")
+	Members.Add(Members.Member{
+		Address: "127.0.0.1:7000",
+		Name: "4",
+	})
 
 }
 
 func main() {
 
+	if (len(os.Args) < 2) {
+		fmt.Println(fmt.Errorf("Member name missing!"))
+		return
+	}
+
 	addMembers();
+	Members.SetSelf(os.Args[1])
 
 	PAXOS.Init()
 

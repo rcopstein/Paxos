@@ -2,7 +2,6 @@ package Members
 
 import (
 	"container/list"
-	"fmt"
 	"math/rand"
 )
 
@@ -24,6 +23,10 @@ func GetSelf() *Member {
 
 func Add(memb Member) {
 	l.PushFront(memb);
+}
+
+func Count() int {
+	return l.Len()
 }
 
 func Find_Random() *Member {
@@ -52,8 +55,6 @@ func Find(name string) *Member {
 
 func ForEach(fun func(member Member)) {
 	for e := l.Front(); e != nil; e = e.Next() {
-		fmt.Println("Yes1!")
 		fun(e.Value.(Member))
-		fmt.Println("Yes2!")
 	}
 }

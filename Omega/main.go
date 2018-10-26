@@ -25,6 +25,6 @@ func (self Omega_Module) Start() {
 	for {
 		var a = Members.Find_Random();
 		self.Ind <- Omega_Trust_Message{Member: a}
-		time.Sleep(2 * time.Second)
+		time.Sleep(10 * time.Second)
 	}
 }

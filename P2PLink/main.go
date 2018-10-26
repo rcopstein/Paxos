@@ -20,21 +20,20 @@ type P2PLink_Ind_Message struct {
 type P2PLink struct {
 	Ind chan P2PLink_Ind_Message
 	Req chan P2PLink_Req_Message
-	Run bool
 }
 
-func (module P2PLink) Init(address string) {
+func Init(address string) *P2PLink {
 
-	fmt.Println("Init PP2PLink!")
-	if (module.Run) {
-		return
-	}
+	var module P2PLink
 
-	module.Run = true;
-	module.Start(address)
+	module.Ind = make(chan P2PLink_Ind_Message)
+	module.Req = make(chan P2PLink_Req_Message)
+	Start(&module, address)
+
+	return &module
 }
 
-func (module P2PLink) Start(address string) {
+func Start(module *P2PLink, address string) {
 
 	go func() {
 
@@ -73,9 +72,7 @@ func (module P2PLink) Start(address string) {
 
 func (module P2PLink) Send(message P2PLink_Req_Message) {
 
-	fmt.Println("A")
 	conn, err := net.Dial("udp", message.To)
-	fmt.Println("B")
 	if err != nil { fmt.Println(err); return }
 	fmt.Fprintf(conn, message.Message)
 	conn.Close()

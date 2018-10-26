@@ -2,9 +2,10 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="e28aad1e-3e86-425c-8ccd-30001d245059" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/P2PLink/main.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Main/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/Main/main.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Members/members.go" beforeDir="false" afterPath="$PROJECT_DIR$/Members/members.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Omega/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/Omega/main.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/P2PLink/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/P2PLink/main.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/PAXOS/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/PAXOS/main.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/PAXOS/messages.go" beforeDir="false" afterPath="$PROJECT_DIR$/PAXOS/messages.go" afterDir="false" />
     </list>
@@ -24,22 +25,31 @@
       </usages-collector>
       <usages-collector id="statistics.file.extensions.open">
         <counts>
-          <entry key="go" value="16" />
+          <entry key="go" value="18" />
+          <entry key="s" value="2" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.open">
         <counts>
-          <entry key="Go" value="16" />
+          <entry key="Go" value="18" />
+          <entry key="x86 Plan9 Assembly" value="2" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.edit">
         <counts>
-          <entry key="go" value="6709" />
+          <entry key="go" value="9930" />
+          <entry key="txt" value="32" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.edit">
         <counts>
-          <entry key="Go" value="6709" />
+          <entry key="Go" value="9930" />
+          <entry key="PLAIN_TEXT" value="32" />
+        </counts>
+      </usages-collector>
+      <usages-collector id="statistics.go.postfix.template.usages.trigger">
+        <counts>
+          <entry key=".append" value="4" />
         </counts>
       </usages-collector>
     </session>
@@ -49,24 +59,23 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/Omega/main.go">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-7">
-              <caret line="23" column="33" selection-start-line="23" selection-start-column="33" selection-end-line="23" selection-end-column="33" />
+            <state relative-caret-position="289">
+              <caret line="27" column="21" selection-start-line="27" selection-start-column="21" selection-end-line="27" selection-end-column="21" />
               <folding>
                 <element signature="e#15#47#0" expanded="true" />
                 <element signature="e#74#108#0" />
                 <element signature="e#115#135#0" />
                 <element signature="n#!!block;n#Init#0" />
-                <element signature="n#!!block;n#Start#0" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="false">
+      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/Main/main.go">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-7">
-              <caret line="6" column="1" selection-start-line="6" selection-start-column="1" selection-end-line="6" selection-end-column="1" />
+            <state relative-caret-position="493">
+              <caret line="29" column="16" selection-start-line="29" selection-start-column="16" selection-end-line="29" selection-end-column="16" />
               <folding>
                 <element signature="e#14#40#0" expanded="true" />
               </folding>
@@ -77,16 +86,27 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/PAXOS/main.go">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="400">
-              <caret line="54" column="34" lean-forward="true" selection-start-line="54" selection-start-column="34" selection-end-line="54" selection-end-column="34" />
+            <state relative-caret-position="493">
+              <caret line="220" lean-forward="true" selection-start-line="220" selection-end-line="220" />
               <folding>
+                <element signature="e#31#96#0" />
+                <element signature="e#206#225#0" />
                 <element signature="e#137#384#0" />
+                <element signature="n#!!block;n#Init#0" />
                 <element signature="n#!!block;n#Start#0" />
                 <element signature="n#!!block;n#sendNextBallotMessage#0" />
+                <element signature="n#!!block;n#sendLastVoteMessage#0" />
+                <element signature="n#!!block;n#pollingMajoritySet#0" />
+                <element signature="n#!!block;n#sendBeginBallot#0" />
+                <element signature="n#!!block;n#sendVotedMessage#0" />
+                <element signature="n#!!block;n#succeed#0" />
+                <element signature="n#!!block;n#sendSuccessMessage#0" />
                 <element signature="n#!!block;n#changeLeader#0" />
                 <element signature="n#!!block;n#tryNewBallot#0" />
-                <element signature="n#!!block;n#recvBeginBallot#0" />
+                <element signature="n#!!block;n#checkContains#0" />
                 <element signature="n#!!block;n#recvLastVote#0" />
+                <element signature="e#2951#2958#0" />
+                <element signature="n#!!block;n#recvBeginBallot#0" />
                 <element signature="n#!!block;n#recvNextBallot#0" />
                 <element signature="n#!!block;n#recvSuccess#0" />
                 <element signature="n#!!block;n#recvVoted#0" />
@@ -96,10 +116,10 @@
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/PP2PLink/main.go">
+        <entry file="file://$PROJECT_DIR$/P2PLink/main.go">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="228">
-              <caret line="32" column="45" lean-forward="true" selection-start-line="32" selection-start-column="45" selection-end-line="32" selection-end-column="45" />
+            <state relative-caret-position="-7">
+              <caret line="71" selection-start-line="71" selection-end-line="71" />
               <folding>
                 <element signature="e#71#108#0" />
                 <element signature="e#136#175#0" />
@@ -113,56 +133,33 @@
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/P2PLink/main.go">
+        <entry file="file://$PROJECT_DIR$/Members/members.go">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="279">
-              <caret line="77" column="18" selection-start-line="77" selection-start-column="18" selection-end-line="77" selection-end-column="18" />
+            <state relative-caret-position="289">
+              <caret line="26" lean-forward="true" selection-start-line="26" selection-end-line="26" />
               <folding>
-                <element signature="e#71#108#0" />
-                <element signature="e#136#175#0" />
-                <element signature="e#191#273#0" />
-                <element signature="e#370#383#0" />
+                <element signature="n#!!block;n#SetSelf#0" />
+                <element signature="n#!!block;n#GetSelf#0" />
+                <element signature="n#!!block;n#Add#0" />
+                <element signature="n#!!block;n#Count#0" />
+                <element signature="n#!!block;n#Find_Random#0" />
+                <element signature="n#!!block;n#Find#0" />
+                <element signature="n#!!block;n#ForEach#0" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/Members/members.go">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="475">
-              <caret line="55" column="11" selection-start-line="55" selection-start-column="8" selection-end-line="55" selection-end-column="11" />
-              <folding>
-                <element signature="n#!!block;n#SetSelf#0" />
-                <element signature="n#!!block;n#GetSelf#0" />
-                <element signature="n#!!block;n#Add#0" />
-                <element signature="n#!!block;n#Find_Random#0" />
-                <element signature="n#!!block;n#Find#0" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/PAXOS/messages.go">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="169">
-              <caret line="53" column="12" selection-start-line="53" selection-start-column="12" selection-end-line="53" selection-end-column="12" />
+            <state relative-caret-position="593">
+              <caret line="147" column="5" lean-forward="true" selection-start-line="147" selection-start-column="5" selection-end-line="147" selection-end-column="5" />
               <folding>
                 <element signature="e#36#77#0" />
                 <element signature="e#264#292#0" />
                 <element signature="e#302#325#0" />
-                <element signature="n#!!block;n#buildMessage#0" />
                 <element signature="n#!!block;n#recvMessage#0" />
-                <element signature="n#!!block;n#sendMessage_BeginBallot#0" />
-                <element signature="e#1056#1094#0" />
-                <element signature="n#!!block;n#sendMessage_LastVote#0" />
-                <element signature="e#1319#1400#0" />
-                <element signature="n#!!block;n#sendMessage_NextBallot#0" />
-                <element signature="n#!!block;n#sendMessage_Success#0" />
-                <element signature="e#1931#2010#0" />
-                <element signature="n#!!block;n#sendMessage_Voted#0" />
-                <element signature="e#1929#2010#0" />
               </folding>
             </state>
           </provider>
@@ -180,6 +177,12 @@
   <component name="FindInProjectRecents">
     <findStrings>
       <find>PP2PLink</find>
+      <find>&quot;A&quot;</find>
+      <find>LastDec</find>
+      <find>lastDec</find>
+      <find>fmt.</find>
+      <find>Owners</find>
+      <find>PrevVotes</find>
     </findStrings>
   </component>
   <component name="GOROOT" path="/usr/local/Cellar/go/1.10.3/libexec" />
@@ -204,12 +207,12 @@
       <list>
         <option value="$PROJECT_DIR$/ReliableBroadcast/main.go" />
         <option value="$PROJECT_DIR$/PP2PLink/main.go" />
-        <option value="$PROJECT_DIR$/Main/main.go" />
-        <option value="$PROJECT_DIR$/Omega/main.go" />
-        <option value="$PROJECT_DIR$/Members/members.go" />
         <option value="$PROJECT_DIR$/P2PLink/main.go" />
-        <option value="$PROJECT_DIR$/PAXOS/main.go" />
+        <option value="$PROJECT_DIR$/Members/members.go" />
+        <option value="$PROJECT_DIR$/Omega/main.go" />
         <option value="$PROJECT_DIR$/PAXOS/messages.go" />
+        <option value="$PROJECT_DIR$/PAXOS/main.go" />
+        <option value="$PROJECT_DIR$/Main/main.go" />
       </list>
     </option>
   </component>
@@ -235,16 +238,6 @@
               <item name="Paxos-Go" type="b2602c69:ProjectViewProjectNode" />
               <item name="Paxos-Go" type="462c0819:PsiDirectoryNode" />
             </path>
-            <path>
-              <item name="Paxos-Go" type="b2602c69:ProjectViewProjectNode" />
-              <item name="Paxos-Go" type="462c0819:PsiDirectoryNode" />
-              <item name="Members" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="Paxos-Go" type="b2602c69:ProjectViewProjectNode" />
-              <item name="Paxos-Go" type="462c0819:PsiDirectoryNode" />
-              <item name="P2PLink" type="462c0819:PsiDirectoryNode" />
-            </path>
           </expand>
           <select />
         </subPane>
@@ -260,7 +253,7 @@
     <property name="go.gopath.indexing.explicitly.defined" value="true" />
     <property name="go.sdk.automatically.set" value="true" />
     <property name="last_opened_file_path" value="$USER_HOME$" />
-    <property name="settings.editor.selected.configurable" value="editor.preferences.fonts.default" />
+    <property name="settings.editor.selected.configurable" value="preferences.lookFeel" />
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
@@ -336,11 +329,11 @@
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info anchor="bottom" id="Database Changes" show_stripe_button="false" />
       <window_info anchor="bottom" id="Version Control" show_stripe_button="false" />
-      <window_info anchor="bottom" id="Terminal" />
+      <window_info anchor="bottom" id="Terminal" weight="0.32891566" />
       <window_info anchor="bottom" id="Event Log" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" />
-      <window_info active="true" anchor="bottom" id="Run" order="2" visible="true" weight="0.32891566" />
+      <window_info anchor="bottom" id="Run" order="2" weight="0.32891566" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
@@ -356,6 +349,25 @@
   </component>
   <component name="VcsContentAnnotationSettings">
     <option name="myLimit" value="2678400000" />
+  </component>
+  <component name="debuggerHistoryManager">
+    <expressions id="evaluateExpression">
+      <expression>
+        <expression-string>len(Members</expression-string>
+        <language-id>go</language-id>
+        <evaluation-mode>EXPRESSION</evaluation-mode>
+      </expression>
+      <expression>
+        <expression-string>Members.l</expression-string>
+        <language-id>go</language-id>
+        <evaluation-mode>EXPRESSION</evaluation-mode>
+      </expression>
+      <expression>
+        <expression-string>Members.Count()</expression-string>
+        <language-id>go</language-id>
+        <evaluation-mode>EXPRESSION</evaluation-mode>
+      </expression>
+    </expressions>
   </component>
   <component name="editorHistoryManager">
     <entry file="file://$PROJECT_DIR$/BestEffortBroadcast/main.go">
@@ -378,34 +390,25 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Main/main.go">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-7">
-          <caret line="6" column="1" selection-start-line="6" selection-start-column="1" selection-end-line="6" selection-end-column="1" />
-          <folding>
-            <element signature="e#14#40#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Omega/main.go">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-7">
-          <caret line="23" column="33" selection-start-line="23" selection-start-column="33" selection-end-line="23" selection-end-column="33" />
-          <folding>
-            <element signature="e#15#47#0" expanded="true" />
-            <element signature="e#74#108#0" />
-            <element signature="e#115#135#0" />
-            <element signature="n#!!block;n#Init#0" />
-            <element signature="n#!!block;n#Start#0" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/PP2PLink/main.go">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="228">
-          <caret line="32" column="45" lean-forward="true" selection-start-line="32" selection-start-column="45" selection-end-line="32" selection-end-column="45" />
+          <caret line="32" column="12" selection-start-line="32" selection-start-column="6" selection-end-line="32" selection-end-column="12" />
+          <folding>
+            <element signature="e#71#108#0" />
+            <element signature="e#136#175#0" />
+            <element signature="e#191#273#0" />
+            <element signature="n#!!block;n#Init#0" />
+            <element signature="n#!!block;n#Start#0" />
+            <element signature="n#!!block;n#Send#0" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/P2PLink/main.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-7">
+          <caret line="71" selection-start-line="71" selection-end-line="71" />
           <folding>
             <element signature="e#71#108#0" />
             <element signature="e#136#175#0" />
@@ -419,43 +422,90 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/Members/members.go">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="475">
-          <caret line="55" column="11" selection-start-line="55" selection-start-column="8" selection-end-line="55" selection-end-column="11" />
+        <state relative-caret-position="289">
+          <caret line="26" lean-forward="true" selection-start-line="26" selection-end-line="26" />
           <folding>
             <element signature="n#!!block;n#SetSelf#0" />
             <element signature="n#!!block;n#GetSelf#0" />
             <element signature="n#!!block;n#Add#0" />
+            <element signature="n#!!block;n#Count#0" />
             <element signature="n#!!block;n#Find_Random#0" />
             <element signature="n#!!block;n#Find#0" />
+            <element signature="n#!!block;n#ForEach#0" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/P2PLink/main.go">
+    <entry file="file://$PROJECT_DIR$/Omega/main.go">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="279">
-          <caret line="77" column="18" selection-start-line="77" selection-start-column="18" selection-end-line="77" selection-end-column="18" />
+        <state relative-caret-position="289">
+          <caret line="27" column="21" selection-start-line="27" selection-start-column="21" selection-end-line="27" selection-end-column="21" />
           <folding>
-            <element signature="e#71#108#0" />
-            <element signature="e#136#175#0" />
-            <element signature="e#191#273#0" />
-            <element signature="e#370#383#0" />
+            <element signature="e#15#47#0" expanded="true" />
+            <element signature="e#74#108#0" />
+            <element signature="e#115#135#0" />
+            <element signature="n#!!block;n#Init#0" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file:///usr/local/Cellar/go/1.10.3/libexec/src/runtime/sys_darwin_amd64.s">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="156">
+          <caret line="539" selection-start-line="539" selection-end-line="539" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file:///usr/local/Cellar/go/1.10.3/libexec/src/runtime/panic.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="193">
+          <caret line="587" selection-start-line="587" selection-end-line="587" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file:///usr/local/Cellar/go/1.10.3/libexec/src/runtime/asm_amd64.s">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="156">
+          <caret line="2360" selection-start-line="2360" selection-end-line="2360" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/PAXOS/messages.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="593">
+          <caret line="147" column="5" lean-forward="true" selection-start-line="147" selection-start-column="5" selection-end-line="147" selection-end-column="5" />
+          <folding>
+            <element signature="e#36#77#0" />
+            <element signature="e#264#292#0" />
+            <element signature="e#302#325#0" />
+            <element signature="n#!!block;n#recvMessage#0" />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/PAXOS/main.go">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="400">
-          <caret line="54" column="34" lean-forward="true" selection-start-line="54" selection-start-column="34" selection-end-line="54" selection-end-column="34" />
+        <state relative-caret-position="493">
+          <caret line="220" lean-forward="true" selection-start-line="220" selection-end-line="220" />
           <folding>
+            <element signature="e#31#96#0" />
+            <element signature="e#206#225#0" />
             <element signature="e#137#384#0" />
+            <element signature="n#!!block;n#Init#0" />
             <element signature="n#!!block;n#Start#0" />
             <element signature="n#!!block;n#sendNextBallotMessage#0" />
+            <element signature="n#!!block;n#sendLastVoteMessage#0" />
+            <element signature="n#!!block;n#pollingMajoritySet#0" />
+            <element signature="n#!!block;n#sendBeginBallot#0" />
+            <element signature="n#!!block;n#sendVotedMessage#0" />
+            <element signature="n#!!block;n#succeed#0" />
+            <element signature="n#!!block;n#sendSuccessMessage#0" />
             <element signature="n#!!block;n#changeLeader#0" />
             <element signature="n#!!block;n#tryNewBallot#0" />
-            <element signature="n#!!block;n#recvBeginBallot#0" />
+            <element signature="n#!!block;n#checkContains#0" />
             <element signature="n#!!block;n#recvLastVote#0" />
+            <element signature="e#2951#2958#0" />
+            <element signature="n#!!block;n#recvBeginBallot#0" />
             <element signature="n#!!block;n#recvNextBallot#0" />
             <element signature="n#!!block;n#recvSuccess#0" />
             <element signature="n#!!block;n#recvVoted#0" />
@@ -463,25 +513,12 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/PAXOS/messages.go">
+    <entry file="file://$PROJECT_DIR$/Main/main.go">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="169">
-          <caret line="53" column="12" selection-start-line="53" selection-start-column="12" selection-end-line="53" selection-end-column="12" />
+        <state relative-caret-position="493">
+          <caret line="29" column="16" selection-start-line="29" selection-start-column="16" selection-end-line="29" selection-end-column="16" />
           <folding>
-            <element signature="e#36#77#0" />
-            <element signature="e#264#292#0" />
-            <element signature="e#302#325#0" />
-            <element signature="n#!!block;n#buildMessage#0" />
-            <element signature="n#!!block;n#recvMessage#0" />
-            <element signature="n#!!block;n#sendMessage_BeginBallot#0" />
-            <element signature="e#1056#1094#0" />
-            <element signature="n#!!block;n#sendMessage_LastVote#0" />
-            <element signature="e#1319#1400#0" />
-            <element signature="n#!!block;n#sendMessage_NextBallot#0" />
-            <element signature="n#!!block;n#sendMessage_Success#0" />
-            <element signature="e#1931#2010#0" />
-            <element signature="n#!!block;n#sendMessage_Voted#0" />
-            <element signature="e#1929#2010#0" />
+            <element signature="e#14#40#0" expanded="true" />
           </folding>
         </state>
       </provider>

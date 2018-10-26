@@ -2,6 +2,7 @@ package PAXOS
 
 import (
 	"../Members"
+	"fmt"
 	"strconv"
 	"strings"
 )
@@ -22,8 +23,7 @@ type PAXOS_Message struct {
 
 	messageType MessageType
 	from Members.Member
-	outcome int
-	ballot int
+	vals []int
 
 }
 type PAXOS_Messages_Module struct {
@@ -42,7 +42,7 @@ func Init_Messages() *PAXOS_Messages_Module {
 		Ind: make(chan PAXOS_Message),
 		link: &p2plink,
 	}
-	result.link.Init(Members.GetSelf().Address)
+	result.link = P2PLink.Init(Members.GetSelf().Address)
 
 	go func() {
 		for {
@@ -55,20 +55,19 @@ func Init_Messages() *PAXOS_Messages_Module {
 
 }
 
-func buildMessage(messageType MessageType, ballot int, outcome int) string {
+func buildMessage(messageType MessageType, vals ...int) string {
 
 	var message string;
 
 	message += Members.GetSelf().Name // Copy Current Member's Name
 
 	message += "/"
-	message += string(messageType); // Copy the Message Type
+	message += strconv.Itoa(int(messageType)); // Copy the Message Type
 
-	message += "/";
-	message += string(ballot); // Copy the Ballot Number
-
-	message += "/";
-	message += string(outcome) // Copy the Outcome
+	for _, val := range vals {
+		message += "/"
+		message += strconv.Itoa(val) // Copy Every Value
+	}
 
 	return message;
 
@@ -84,17 +83,16 @@ func recvMessage(message string) PAXOS_Message {
 	var i, _ = strconv.Atoi(elements[1])
 	result.messageType = MessageType(i);
 
-	var j, _ = strconv.Atoi(elements[2])
-	result.ballot = j
-
-	var k, _ = strconv.Atoi(elements[3])
-	result.ballot = k
+	for j := 2; j < len(elements); j++ {
+		var k, _ = strconv.Atoi(elements[j])
+		result.vals = append(result.vals, k)
+	}
 
 	return result
 
 }
 
-func (self PAXOS_Messages_Module) sendMessage_BeginBallot(member Members.Member, ballot int, outcome int) {
+func (self *PAXOS_Messages_Module) SendMessage_BeginBallot(member Members.Member, ballot int, outcome int) {
 
 	var message = P2PLink.P2PLink_Req_Message{
 		To: member.Address,
@@ -102,49 +100,54 @@ func (self PAXOS_Messages_Module) sendMessage_BeginBallot(member Members.Member,
 	}
 
 	self.link.Req <- message
+	fmt.Println(Members.GetSelf().Name, " sent BeginBallot to:", member.Name)
 
 }
 
-func (self PAXOS_Messages_Module) sendMessage_LastVote(member Members.Member, ballot int, outcome int) {
+func (self *PAXOS_Messages_Module) SendMessage_LastVote(member Members.Member, lastVote int, prevVote int, prevDec int) {
 
 	var message = P2PLink.P2PLink_Req_Message{
 		To: member.Address,
-		Message: buildMessage(LastVote, ballot, outcome),
+		Message: buildMessage(LastVote, lastVote, prevVote, prevDec),
 	}
 
 	self.link.Req <- message
+	fmt.Println(Members.GetSelf().Name, " sent LastVote to:", member.Name)
 
 }
 
-func (self PAXOS_Messages_Module) sendMessage_NextBallot(member Members.Member, ballot int) {
+func (self *PAXOS_Messages_Module) SendMessage_NextBallot(member Members.Member, ballot int) {
 
 	var message = P2PLink.P2PLink_Req_Message{
 		To: member.Address,
-		Message: buildMessage(NextBallot, ballot, 0),
+		Message: buildMessage(NextBallot, ballot),
 	}
 
 	self.link.Req <- message
+	fmt.Println(Members.GetSelf().Name, " sent NextBallot to:", member.Name)
 
 }
 
-func (self PAXOS_Messages_Module) sendMessage_Success(member Members.Member, outcome int) {
+func (self *PAXOS_Messages_Module) SendMessage_Success(member Members.Member, outcome int) {
 
 	var message = P2PLink.P2PLink_Req_Message{
 		To: member.Address,
-		Message: buildMessage(BeginBallot, 0, outcome),
+		Message: buildMessage(Success, outcome),
 	}
 
 	self.link.Req <- message
+	fmt.Println(Members.GetSelf().Name, " sent Success to:", member.Name)
 
 }
 
-func (self PAXOS_Messages_Module) sendMessage_Voted(member Members.Member, ballot int) {
+func (self *PAXOS_Messages_Module) SendMessage_Voted(member Members.Member, ballot int) {
 
 	var message = P2PLink.P2PLink_Req_Message{
 		To: member.Address,
-		Message: buildMessage(Voted, ballot, 0),
+		Message: buildMessage(Voted, ballot),
 	}
 
 	self.link.Req <- message
+	fmt.Println(Members.GetSelf().Name, " sent Voted to:", member.Name)
 
 }
