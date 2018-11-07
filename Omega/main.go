@@ -2,6 +2,7 @@ package Omega
 
 import (
 	"../Members"
+	"math/rand"
 	"time"
 )
 
@@ -22,9 +23,21 @@ func Init() Omega_Module {
 }
 
 func (self Omega_Module) Start() {
+
 	for {
-		var a = Members.Find_Random();
-		self.Ind <- Omega_Trust_Message{Member: a}
-		time.Sleep(10 * time.Second)
+		if rand.Intn(2) == 0 {
+
+			var a = Members.Find(1)
+			self.Ind <- Omega_Trust_Message{Member: a}
+
+		} else {
+
+			var a = Members.Find_Random();
+			self.Ind <- Omega_Trust_Message{Member: a}
+
+		}
+
+		var b = rand.Intn(5)
+		time.Sleep(time.Duration(b) * time.Second)
 	}
 }

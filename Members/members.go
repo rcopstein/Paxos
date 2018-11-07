@@ -2,18 +2,19 @@ package Members
 
 import (
 	"container/list"
+	"fmt"
 	"math/rand"
 )
 
 type Member struct {
 	Address string
-	Name    string
+	Name    int
 }
 
 var self *Member;
 var l = list.New();
 
-func SetSelf(name string) {
+func SetSelf(name int) {
 	self = Find(name);
 }
 
@@ -44,12 +45,13 @@ func Find_Random() *Member {
 	return nil;
 }
 
-func Find(name string) *Member {
+func Find(name int) *Member {
 	for e := l.Front(); e != nil; e = e.Next() {
 		var item = e.Value.(Member);
 		if (item.Name == name) { return &item; }
 	}
 
+	fmt.Print("Search for ", string(name), " failed!");
 	return nil;
 }
 

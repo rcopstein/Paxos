@@ -4,6 +4,7 @@ import (
 	"../Members"
 	"fmt"
 	"math/rand"
+	"strconv"
 	"time"
 )
 import "../Omega"
@@ -22,15 +23,16 @@ type Vote struct {
 	decision int
 	ballot int
 }
-type PAXOS_Module struct {
+type Module struct {
 
 	// SubModules
-	messages *PAXOS_Messages_Module
+	messages *MessagesModule
 	leaderElection Omega.Omega_Module
 
 	// Variables
 	leader *Members.Member
 
+	instanceNumber int
 	hasPropose bool
 	propose int
 
@@ -53,13 +55,13 @@ type PAXOS_Module struct {
 }
 
 // Initializers
-func Init() *PAXOS_Module {
+func Init() *Module {
 
-	var mod = PAXOS_Module{}
+	var mod = Module{}
 
 	mod.leader         = nil
 	mod.hasPropose     = false
-	mod.messages       = Init_Messages()
+	mod.messages       = InitMessages()
 	mod.leaderElection = Omega.Init()
 
 	mod.CurrentStatus = Idle
@@ -76,109 +78,109 @@ func Init() *PAXOS_Module {
 	mod.NextBal   = -1
 
 	go mod.Start()
-	return &mod;
+	return &mod
 
 }
-func (self *PAXOS_Module) Start() {
+func (mod *Module) Start() {
 
-	go self.sendNextBallotMessage()
-	go self.sendLastVoteMessage()
-	go self.pollingMajoritySet()
-	go self.sendBeginBallot()
-	go self.sendVotedMessage()
-	go self.succeed()
-	go self.sendSuccessMessage()
+	go mod.sendNextBallotMessage()
+	go mod.sendLastVoteMessage()
+	go mod.pollingMajoritySet()
+	go mod.sendBeginBallot()
+	go mod.sendVotedMessage()
+	go mod.succeed()
+	go mod.sendSuccessMessage()
 
 	for {
 		select {
-			case y := <- self.messages.Ind:
-				if y.messageType == LastVote { self.recvLastVote(y.from, y.vals[0], y.vals[1], y.vals[2]) }
-				if y.messageType == BeginBallot { self.recvBeginBallot(y.from, y.vals[0], y.vals[1]) }
-				if y.messageType == NextBallot { self.recvNextBallot(y.from, y.vals[0]) }
-				if y.messageType == Success { self.recvSuccess(y.from, y.vals[0]) }
-				if y.messageType == Voted { self.recvVoted(y.from, y.vals[0]) }
+			case y := <- mod.messages.Ind:
+				if y.messageType == LastVote { mod.recvLastVote(y.from, y.vals[0], y.vals[1], y.vals[2]) }
+				if y.messageType == BeginBallot { mod.recvBeginBallot(y.from, y.vals[0], y.vals[1]) }
+				if y.messageType == NextBallot { mod.recvNextBallot(y.from, y.vals[0]) }
+				if y.messageType == Success { mod.recvSuccess(y.from, y.vals[0]) }
+				if y.messageType == Voted { mod.recvVoted(y.from, y.vals[0]) }
 				break;
-			case y := <- self.leaderElection.Ind:
-				self.changeLeader(y.Member)
+			case y := <- mod.leaderElection.Ind:
+				mod.changeLeader(y.Member)
 				break;
 		}
 	}
 }
 
 // Always Enabled
-func (self *PAXOS_Module) sendNextBallotMessage() {
+func (mod *Module) sendNextBallotMessage() {
 	for {
-		if self.CurrentStatus == Trying {
+		if mod.CurrentStatus == Trying {
 			Members.ForEach(func(member Members.Member) {
-				self.messages.SendMessage_NextBallot(member, self.LastTried)
+				mod.messages.SendMessageNextBallot(mod.instanceNumber, member, mod.LastTried)
 			})
 		}
 
 		time.Sleep(500 * time.Millisecond)
 	}
 }
-func (self *PAXOS_Module) sendLastVoteMessage() {
+func (mod *Module) sendLastVoteMessage() {
 	for {
-		if self.NextBal > self.PrevBal {
-			self.messages.SendMessage_LastVote(self.Owners[self.NextBal], self.NextBal, self.PrevBal, self.PrevDec)
+		if mod.NextBal > mod.PrevBal {
+			mod.messages.SendMessageLastVote(mod.instanceNumber, mod.Owners[mod.NextBal], mod.NextBal, mod.PrevBal, mod.PrevDec)
 		}
 
 		time.Sleep(500 * time.Millisecond)
 	}
 }
-func (self *PAXOS_Module) pollingMajoritySet() {
+func (mod *Module) pollingMajoritySet() {
 	for {
-		if self.CurrentStatus == Trying && len(self.PrevVotes) >= (Members.Count() / 2 + 1) {
+		if mod.CurrentStatus == Trying && len(mod.PrevVotes) >= (Members.Count() / 2 + 1) {
 
 			fmt.Println("I have a majority set!")
 
-			self.CurrentStatus = Polling
-			self.Quorum = self.Quorum[:0]
-			self.Decree = self.propose
-			for _, vote := range self.PrevVotes {
-				if vote.ballot != -1 { self.Decree = vote.decision }
-				self.Quorum = append(self.Quorum, vote.member)
+			mod.CurrentStatus = Polling
+			mod.Quorum = mod.Quorum[:0]
+			mod.Decree = mod.propose
+			for _, vote := range mod.PrevVotes {
+				if vote.ballot != -1 { mod.Decree = vote.decision }
+				mod.Quorum = append(mod.Quorum, vote.member)
 			}
-			self.Voters = self.Voters[:0]
+			mod.Voters = mod.Voters[:0]
 		}
 
 		time.Sleep(500 * time.Millisecond)
 	}
 }
-func (self *PAXOS_Module) sendBeginBallot() {
+func (mod *Module) sendBeginBallot() {
 	for {
-		if self.CurrentStatus == Polling {
-			for _, m := range self.Quorum {
-				self.messages.SendMessage_BeginBallot(m, self.LastTried, self.Decree)
+		if mod.CurrentStatus == Polling {
+			for _, m := range mod.Quorum {
+				mod.messages.SendMessageBeginBallot(mod.instanceNumber, m, mod.LastTried, mod.Decree)
 			}
 		}
 
 		time.Sleep(500 * time.Millisecond)
 	}
 }
-func (self *PAXOS_Module) sendVotedMessage() {
+func (mod *Module) sendVotedMessage() {
 	for {
-		if self.PrevBal != -1 {
-			self.messages.SendMessage_Voted(self.Owners[self.PrevBal], self.PrevBal)
+		if mod.PrevBal != -1 {
+			mod.messages.SendMessageVoted(mod.instanceNumber, mod.Owners[mod.PrevBal], mod.PrevBal)
 		}
 
 		time.Sleep(500 * time.Millisecond)
 	}
 }
-func (self *PAXOS_Module) succeed() {
+func (mod *Module) succeed() {
 	for {
-		if self.CurrentStatus == Polling && self.Outcome == -1 && checkContains(self.Quorum, self.Voters) {
-			self.Outcome = self.Decree
+		if mod.CurrentStatus == Polling && mod.Outcome == -1 && checkContains(mod.Quorum, mod.Voters) {
+			mod.Outcome = mod.Decree
 		}
 
 		time.Sleep(500 * time.Millisecond)
 	}
 }
-func (self *PAXOS_Module) sendSuccessMessage() {
+func (mod *Module) sendSuccessMessage() {
 	for {
-		if (self.Outcome != -1) {
+		if mod.Outcome != -1 {
 			Members.ForEach(func(member Members.Member) {
-				self.messages.SendMessage_Success(member, self.Outcome)
+				mod.messages.SendMessageSuccess(mod.instanceNumber, member, mod.Outcome)
 			})
 		}
 
@@ -187,24 +189,26 @@ func (self *PAXOS_Module) sendSuccessMessage() {
 }
 
 // Auxiliary Methods
-func (self *PAXOS_Module) changeLeader(member *Members.Member) {
+func (mod *Module) changeLeader(member *Members.Member) {
 
-	self.leader = member;
-	fmt.Println("The leader is " + self.leader.Name)
+	mod.leader = member
+
+	name := strconv.Itoa(mod.leader.Name)
+	fmt.Println("The leader is " + name)
 	if member.Name == Members.GetSelf().Name {
-		fmt.Println("I'm the leader!");
-		self.tryNewBallot();
+		fmt.Println("I'm the leader!")
+		mod.tryNewBallot();
 	}
 
 }
-func (self *PAXOS_Module) tryNewBallot() {
+func (mod *Module) tryNewBallot() {
 
-	self.hasPropose = true
-	self.propose = rand.Intn(10) // For testing purposes only
+	mod.hasPropose = true
+	mod.propose = rand.Intn(10) // For testing purposes only
 
-	self.LastTried++
-	self.CurrentStatus = Trying
-	self.PrevVotes = self.PrevVotes[:0]
+	mod.LastTried++
+	mod.CurrentStatus = Trying
+	mod.PrevVotes = mod.PrevVotes[:0]
 
 }
 func checkContains(a []Members.Member, b []Members.Member) bool {
@@ -220,8 +224,8 @@ func checkContains(a []Members.Member, b []Members.Member) bool {
 }
 
 // Events
-func (self *PAXOS_Module) recvLastVote(from Members.Member, NextBal int, LastBal int, LastDec int) {
-	if (NextBal == self.LastTried && self.CurrentStatus == Trying) {
+func (mod *Module) recvLastVote(from Members.Member, NextBal int, LastBal int, LastDec int) {
+	if NextBal == mod.LastTried && mod.CurrentStatus == Trying {
 
 		var v = Vote{
 			decision: LastDec,
@@ -229,28 +233,28 @@ func (self *PAXOS_Module) recvLastVote(from Members.Member, NextBal int, LastBal
 			member:   from,
 		}
 
-		for _, vote := range self.PrevVotes { if vote.member == from { return } }
-		self.PrevVotes = append(self.PrevVotes, v)
+		for _, vote := range mod.PrevVotes { if vote.member == from { return } }
+		mod.PrevVotes = append(mod.PrevVotes, v)
 	}
 }
-func (self *PAXOS_Module) recvBeginBallot(from Members.Member, ballot int, outcome int) {
-	if ballot == self.NextBal && self.NextBal > self.PrevBal {
-		self.PrevBal = ballot
-		self.PrevDec = outcome
+func (mod *Module) recvBeginBallot(from Members.Member, ballot int, outcome int) {
+	if ballot == mod.NextBal && mod.NextBal > mod.PrevBal {
+		mod.PrevBal = ballot
+		mod.PrevDec = outcome
 	}
 }
-func (self *PAXOS_Module) recvNextBallot(from Members.Member, ballot int) {
-	if (ballot > self.NextBal) {
-		self.NextBal = ballot
-		self.Owners[ballot] = from
+func (mod *Module) recvNextBallot(from Members.Member, ballot int) {
+	if ballot > mod.NextBal {
+		mod.NextBal = ballot
+		mod.Owners[ballot] = from
 		fmt.Println("I'm", Members.GetSelf().Name, "and my ballot is", ballot)
 	}
 }
-func (self *PAXOS_Module) recvSuccess(from Members.Member, outcome int) {
+func (mod *Module) recvSuccess(from Members.Member, outcome int) {
 	fmt.Println("Decided on", outcome, "!")
 }
-func (self *PAXOS_Module) recvVoted(from Members.Member, ballot int) {
-	if ballot == self.LastTried && self.CurrentStatus == Polling {
-		self.Voters = append(self.Voters, from)
+func (mod *Module) recvVoted(from Members.Member, ballot int) {
+	if ballot == mod.LastTried && mod.CurrentStatus == Polling {
+		mod.Voters = append(mod.Voters, from)
 	}
 }
