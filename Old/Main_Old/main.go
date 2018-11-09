@@ -1,11 +1,13 @@
 package main
 
-import "../Members"
-import "../PaxosMessages"
-import "../Paxos"
-import "strconv"
-import "fmt"
-import "os"
+import (
+	"../../Members"
+	"../../Omega"
+	"../PAXOS_OLD"
+	"strconv"
+	"fmt"
+	"os"
+)
 
 func addMembers() {
 
@@ -31,24 +33,21 @@ func addMembers() {
 
 }
 
-func main() {
+func main2() {
 
-	if len(os.Args) < 2 {
+	if (len(os.Args) < 2) {
 		fmt.Println(fmt.Errorf("Member name missing!"))
 		return
 	}
 
 	addMembers();
+
 	i, _ := strconv.Atoi(os.Args[1])
 	Members.SetSelf(i)
 
-	PaxosMessages.Init(Members.GetSelf())
-	mp := Paxos.NewMulti()
+	PAXOS_OLD.Init()
 
-	mp.ProposeValue(100)
-	mp.ProposeValue(200)
-	mp.ProposeValue(300)
+	var omega = Omega.Init()
+	for { <- omega.Ind; }
 
-	a := make(chan int)
-	for { <- a }
 }

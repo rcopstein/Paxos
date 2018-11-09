@@ -55,8 +55,9 @@ func Find(name int) *Member {
 	return nil;
 }
 
-func ForEach(fun func(member Member)) {
+func ForEach(fun func(member *Member)) {
 	for e := l.Front(); e != nil; e = e.Next() {
-		fun(e.Value.(Member))
+		x := e.Value.(Member)
+		fun(&x)
 	}
 }

@@ -1,11 +1,11 @@
-package PAXOS
+package PAXOS_OLD
 
 import (
-	"../Members"
+	"../../Members"
 	"strconv"
 	"strings"
 )
-import "../P2PLink"
+import "../../P2PLink"
 
 // Message Type Enum
 type MessageType int

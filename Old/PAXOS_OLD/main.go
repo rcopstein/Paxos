@@ -1,13 +1,13 @@
-package PAXOS
+package PAXOS_OLD
 
 import (
-	"../Members"
+	"../../Members"
 	"fmt"
 	"math/rand"
 	"strconv"
 	"time"
 )
-import "../Omega"
+import "../../Omega"
 
 // Status ENUM
 type Status int

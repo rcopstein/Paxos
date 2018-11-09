@@ -25,7 +25,7 @@ func Init() Omega_Module {
 func (self Omega_Module) Start() {
 
 	for {
-		if rand.Intn(2) == 0 {
+		if rand.Intn(2) == 0 || true {
 
 			var a = Members.Find(1)
 			self.Ind <- Omega_Trust_Message{Member: a}

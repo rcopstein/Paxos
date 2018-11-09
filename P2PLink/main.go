@@ -28,12 +28,12 @@ func Init(address string) *P2PLink {
 
 	module.Ind = make(chan P2PLink_Ind_Message)
 	module.Req = make(chan P2PLink_Req_Message)
-	Start(&module, address)
+	module.Start(address)
 
 	return &module
 }
 
-func Start(module *P2PLink, address string) {
+func (module *P2PLink) Start(address string) {
 
 	go func() {
 
