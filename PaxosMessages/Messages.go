@@ -18,6 +18,10 @@ func Send(message Message, to *Members.Member) {
 	packet := P2PLink.P2PLink_Req_Message{ To : convertedTo, Message : convertedMessage }
 	link.Req <- packet
 
+	// target := strconv.Itoa(to.Name)
+	// from := strconv.Itoa(message.Member.Name)
+	// msgType := strconv.Itoa(int(message.Type))
+
 }
 func Init(member *Members.Member) {
 

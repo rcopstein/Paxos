@@ -46,18 +46,30 @@ func (mp *MultiPaxos) CheckMailbox() {
 
 		mp.mutex.Lock()
 
+		// Send Messages from Instances
 		for _, value := range mp.instances {
+
 			select {
 				case y := <- value.MsgInd:
 
 					target := y.Member
 					y.Member = Members.GetSelf()
 					PaxosMessages.Send(y, target)
-
 					break
+
 				default:
 					break
 			}
+
+		}
+
+		// Receive Messages from Messages Module
+		select {
+			case y := <- PaxosMessages.Channel:
+				mp.ReceiveMessage(y)
+				break
+			default:
+				break
 		}
 
 		mp.mutex.Unlock()
@@ -78,6 +90,7 @@ func (mp *MultiPaxos) CheckDecision() {
 					snumber := strconv.Itoa(number)
 					fmt.Println("Decided", y.Values[0], "for instance", snumber)
 
+					/*
 					if y.Values[0] > mp.largestProposedOrDecided {
 						mp.largestProposedOrDecided = y.Values[0]
 					}
@@ -92,6 +105,7 @@ func (mp *MultiPaxos) CheckDecision() {
 							}
 						}
 					}
+					*/
 
 					break
 				default:

@@ -3,7 +3,6 @@ package Paxos
 import (
 	"../PaxosMessages"
 	"fmt"
-	"math/rand"
 	"strconv"
 	"time"
 )
@@ -63,6 +62,7 @@ func NewSingle(instanceNumber int) *SinglePaxos {
 	result.MsgInd = make(chan PaxosMessages.Message)
 
 	result.Req = make(chan PaxosMessages.Message)
+	result.MsgReq = make(chan PaxosMessages.Message)
 	result.LeadReq = make(chan PaxosMessages.Message)
 
 	result.leader         = nil
@@ -91,23 +91,23 @@ func (sp *SinglePaxos) Start() {
 	go sp.sendNextBallotMessage()
 	go sp.sendLastVoteMessage()
 	go sp.pollingMajoritySet()
-	go sp.sendBeginBallot()
-	go sp.sendVotedMessage()
-	go sp.succeed()
 	go sp.sendSuccessMessage()
+	go sp.sendVotedMessage()
+	go sp.sendBeginBallot()
+	go sp.succeed()
 
 	for {
 		select {
 		case y := <- sp.MsgReq:
-			if y.Type == PaxosMessages.LastVote    { sp.recvLastVote(y.Member, y.Values[0], y.Values[1], y.Values[2]) }
 			if y.Type == PaxosMessages.BeginBallot { sp.recvBeginBallot(y.Member, y.Values[0], y.Values[1]) }
 			if y.Type == PaxosMessages.NextBallot  { sp.recvNextBallot(y.Member, y.Values[0]) }
+			if y.Type == PaxosMessages.LastVote    { sp.recvLastVote(y.Member, y.Values[0], y.Values[1], y.Values[2]) }
 			if y.Type == PaxosMessages.Success     { sp.recvSuccess(y.Member, y.Values[0]) }
 			if y.Type == PaxosMessages.Voted       { sp.recvVoted(y.Member, y.Values[0]) }
-			break;
+			break
 		case y := <- sp.LeadReq:
 			sp.changeLeader(y.Member)
-			break;
+			break
 		}
 	}
 
@@ -119,6 +119,7 @@ func (sp *SinglePaxos) sendNextBallotMessage() {
 			Members.ForEach(func(member *Members.Member) {
 
 				message := PaxosMessages.Message{
+					Type : PaxosMessages.NextBallot,
 					Instance : sp.instanceNumber,
 					Member : member,
 					Values : []int { sp.LastTried },
@@ -137,6 +138,7 @@ func (sp *SinglePaxos) sendLastVoteMessage() {
 		if sp.NextBal > sp.PrevBal {
 
 			message := PaxosMessages.Message{
+				Type : PaxosMessages.LastVote,
 				Instance : sp.instanceNumber,
 				Member : sp.Owners[sp.NextBal],
 				Values : []int { sp.NextBal, sp.PrevBal, sp.PrevDec },
@@ -174,6 +176,7 @@ func (sp *SinglePaxos) sendSuccessMessage() {
 			Members.ForEach(func(member *Members.Member) {
 
 				message := PaxosMessages.Message{
+					Type : PaxosMessages.Success,
 					Instance : sp.instanceNumber,
 					Member : member,
 					Values : []int { sp.Outcome },
@@ -192,6 +195,7 @@ func (sp *SinglePaxos) sendVotedMessage() {
 		if sp.PrevBal != -1 {
 
 			message := PaxosMessages.Message{
+				Type : PaxosMessages.Voted,
 				Instance : sp.instanceNumber,
 				Member : sp.Owners[sp.PrevBal],
 				Values : []int { sp.PrevBal },
@@ -210,6 +214,7 @@ func (sp *SinglePaxos) sendBeginBallot() {
 			for _, m := range sp.Quorum {
 
 				message := PaxosMessages.Message{
+					Type : PaxosMessages.BeginBallot,
 					Instance : sp.instanceNumber,
 					Member : m,
 					Values : []int { sp.LastTried, sp.Decree },
@@ -226,7 +231,15 @@ func (sp *SinglePaxos) sendBeginBallot() {
 func (sp *SinglePaxos) succeed() {
 	for {
 		if sp.CurrentStatus == Polling && sp.Outcome == -1 && checkContains(sp.Quorum, sp.Voters) {
+			fmt.Println("Decided on", sp.Decree, "!")
 			sp.Outcome = sp.Decree
+
+			message := PaxosMessages.Message{
+				Instance : sp.instanceNumber,
+				Values : []int { sp.Outcome },
+			}
+			sp.Ind <- message
+
 		}
 
 		time.Sleep(500 * time.Millisecond)
@@ -234,26 +247,16 @@ func (sp *SinglePaxos) succeed() {
 }
 
 // Auxiliary Methods
-func (sp *SinglePaxos) tryNewBallot() {
-
-	sp.hasPropose = true
-	sp.propose = rand.Intn(10) // For testing purposes only
-
-	sp.LastTried++
-	sp.CurrentStatus = Trying
-	sp.PrevVotes = sp.PrevVotes[:0]
-
-}
 func (sp *SinglePaxos) changeLeader(member *Members.Member) {
 
 	sp.leader = member
 
-	name := strconv.Itoa(sp.leader.Name)
-	name = name
-	// fmt.Println("The leader is " + name)
-	if member.Name == Members.GetSelf().Name {
-		// fmt.Println("I'm the leader!")
-		sp.tryNewBallot();
+	if sp.leader.Name == Members.GetSelf().Name && sp.hasPropose && sp.Outcome == -1 {
+
+		sp.LastTried++
+		sp.CurrentStatus = Trying
+		sp.PrevVotes = sp.PrevVotes[:0]
+
 	}
 
 }
@@ -262,7 +265,7 @@ func checkContains(a []*Members.Member, b []*Members.Member) bool {
 
 	for _, ma := range a {
 		flag = false
-		for _, mb := range b { if ma == mb { flag = true } }
+		for _, mb := range b { if ma.Name == mb.Name { flag = true } }
 		if !flag { return false }
 	}
 
@@ -279,21 +282,34 @@ func (sp *SinglePaxos) recvLastVote(from *Members.Member, NextBal int, LastBal i
 			member:   from,
 		}
 
-		for _, vote := range sp.PrevVotes { if vote.member == from { return } }
+		for _, vote := range sp.PrevVotes {
+			if vote.member.Name == from.Name {
+				return
+			}
+		}
 		sp.PrevVotes = append(sp.PrevVotes, v)
+
+		name := strconv.Itoa(from.Name)
+		fmt.Println("LastVote from", name)
+
 	}
 }
 func (sp *SinglePaxos) recvBeginBallot(from *Members.Member, ballot int, outcome int) {
 	if ballot == sp.NextBal && sp.NextBal > sp.PrevBal {
 		sp.PrevBal = ballot
 		sp.PrevDec = outcome
+
+		name := strconv.Itoa(from.Name)
+		fmt.Println("BeginBallot from", name)
 	}
 }
 func (sp *SinglePaxos) recvNextBallot(from *Members.Member, ballot int) {
 	if ballot > sp.NextBal {
 		sp.NextBal = ballot
 		sp.Owners[ballot] = from
-		fmt.Println("I'm", Members.GetSelf().Name, "and my ballot is", ballot)
+
+		name := strconv.Itoa(from.Name)
+		fmt.Println("NextBallot from", name)
 	}
 }
 func (sp *SinglePaxos) recvSuccess(from *Members.Member, outcome int) {
@@ -307,12 +323,16 @@ func (sp *SinglePaxos) recvSuccess(from *Members.Member, outcome int) {
 		Instance : sp.instanceNumber,
 		Values : []int { outcome },
 	}
-
 	sp.Ind <- message
 
 }
 func (sp *SinglePaxos) recvVoted(from *Members.Member, ballot int) {
 	if ballot == sp.LastTried && sp.CurrentStatus == Polling {
-		sp.Voters = append(sp.Voters, from)
+		if !checkContains([]*Members.Member{from}, sp.Voters) {
+			sp.Voters = append(sp.Voters, from)
+
+			name := strconv.Itoa(from.Name)
+			fmt.Println("Voted from", name)
+		}
 	}
 }
