@@ -8,6 +8,8 @@ import (
 )
 import "../Members"
 
+var printMessages = false
+
 type Status int
 const (
 	Idle Status = 0
@@ -144,7 +146,7 @@ func (sp *SinglePaxos) sendLastVoteMessage() {
 				Values : []int { sp.NextBal, sp.PrevBal, sp.PrevDec },
 			}
 
-			sp.MsgInd <- message
+			if message.Member != nil { sp.MsgInd <- message }
 
 		}
 
@@ -155,7 +157,7 @@ func (sp *SinglePaxos) pollingMajoritySet() {
 	for {
 		if sp.CurrentStatus == Trying && len(sp.PrevVotes) >= (Members.Count() / 2 + 1) {
 
-			fmt.Println("I have a majority set!")
+			if (printMessages) { fmt.Println("I have a majority set!") }
 
 			sp.CurrentStatus = Polling
 			sp.Quorum = sp.Quorum[:0]
@@ -182,7 +184,7 @@ func (sp *SinglePaxos) sendSuccessMessage() {
 					Values : []int { sp.Outcome },
 				}
 
-				sp.MsgInd <- message
+				if message.Member != nil { sp.MsgInd <- message }
 
 			})
 		}
@@ -201,7 +203,7 @@ func (sp *SinglePaxos) sendVotedMessage() {
 				Values : []int { sp.PrevBal },
 			}
 
-			sp.MsgInd <- message
+			if message.Member != nil { sp.MsgInd <- message }
 
 		}
 
@@ -231,7 +233,7 @@ func (sp *SinglePaxos) sendBeginBallot() {
 func (sp *SinglePaxos) succeed() {
 	for {
 		if sp.CurrentStatus == Polling && sp.Outcome == -1 && checkContains(sp.Quorum, sp.Voters) {
-			fmt.Println("Decided on", sp.Decree, "!")
+			if (printMessages) { fmt.Println("Decided on", sp.Decree, "!") }
 			sp.Outcome = sp.Decree
 
 			message := PaxosMessages.Message{
@@ -290,7 +292,7 @@ func (sp *SinglePaxos) recvLastVote(from *Members.Member, NextBal int, LastBal i
 		sp.PrevVotes = append(sp.PrevVotes, v)
 
 		name := strconv.Itoa(from.Name)
-		fmt.Println("LastVote from", name)
+		if (printMessages) { fmt.Println("LastVote from", name) }
 
 	}
 }
@@ -300,7 +302,7 @@ func (sp *SinglePaxos) recvBeginBallot(from *Members.Member, ballot int, outcome
 		sp.PrevDec = outcome
 
 		name := strconv.Itoa(from.Name)
-		fmt.Println("BeginBallot from", name)
+		if (printMessages) { fmt.Println("BeginBallot from", name) }
 	}
 }
 func (sp *SinglePaxos) recvNextBallot(from *Members.Member, ballot int) {
@@ -309,7 +311,7 @@ func (sp *SinglePaxos) recvNextBallot(from *Members.Member, ballot int) {
 		sp.Owners[ballot] = from
 
 		name := strconv.Itoa(from.Name)
-		fmt.Println("NextBallot from", name)
+		if (printMessages) { fmt.Println("NextBallot from", name) }
 	}
 }
 func (sp *SinglePaxos) recvSuccess(from *Members.Member, outcome int) {
@@ -317,7 +319,7 @@ func (sp *SinglePaxos) recvSuccess(from *Members.Member, outcome int) {
 	if sp.Outcome != -1 { return }
 
 	sp.Outcome = outcome
-	fmt.Println("Decided on", outcome, "!")
+	if (printMessages) { fmt.Println("Decided on", outcome, "!") }
 
 	message := PaxosMessages.Message{
 		Instance : sp.instanceNumber,
@@ -332,7 +334,7 @@ func (sp *SinglePaxos) recvVoted(from *Members.Member, ballot int) {
 			sp.Voters = append(sp.Voters, from)
 
 			name := strconv.Itoa(from.Name)
-			fmt.Println("Voted from", name)
+			if (printMessages) { fmt.Println("Voted from", name) }
 		}
 	}
 }

@@ -63,6 +63,8 @@ func (mp *MultiPaxos) CheckMailbox() {
 
 		}
 
+		mp.mutex.Unlock()
+
 		// Receive Messages from Messages Module
 		select {
 			case y := <- PaxosMessages.Channel:
@@ -71,11 +73,7 @@ func (mp *MultiPaxos) CheckMailbox() {
 			default:
 				break
 		}
-
-		mp.mutex.Unlock()
-
 	}
-
 }
 func (mp *MultiPaxos) CheckDecision() {
 
@@ -108,6 +106,7 @@ func (mp *MultiPaxos) CheckDecision() {
 					*/
 
 					break
+
 				default:
 					break
 			}
@@ -116,7 +115,6 @@ func (mp *MultiPaxos) CheckDecision() {
 		mp.mutex.Unlock()
 
 	}
-
 }
 func (mp *MultiPaxos) CheckLeadership() {
 
@@ -140,13 +138,12 @@ func (mp *MultiPaxos) CheckLeadership() {
 		mp.mutex.Unlock()
 
 	}
-
 }
 
 func (mp *MultiPaxos) ReceiveMessage(message PaxosMessages.Message) {
 
 	instance, ok := mp.instances[message.Instance]
-	if !ok { mp.CreateInstance(message.Instance) }
+	if !ok { instance = mp.CreateInstance(message.Instance) }
 	instance.MsgReq <- message
 
 }
