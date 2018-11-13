@@ -25,17 +25,8 @@ func Init() Omega_Module {
 func (self Omega_Module) Start() {
 
 	for {
-		if rand.Intn(2) == 0 || true {
-
-			var a = Members.Find(1)
-			self.Ind <- Omega_Trust_Message{Member: a}
-
-		} else {
-
-			var a = Members.Find_Random();
-			self.Ind <- Omega_Trust_Message{Member: a}
-
-		}
+		var a = Members.Find_Random();
+		self.Ind <- Omega_Trust_Message{Member: a}
 
 		var b = rand.Intn(5)
 		time.Sleep(time.Duration(b) * time.Second)
