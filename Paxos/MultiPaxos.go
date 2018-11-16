@@ -1,16 +1,16 @@
 package Paxos
 
 import (
-	"../PaxosMessages"
 	"fmt"
 	"strconv"
 	"sync"
+
+	"../PaxosMessages"
 )
 import "../Members"
 import "../Omega"
 
 type MultiPaxos struct {
-
 	largestProposedOrDecided int
 	smallestNonUsed          int
 	valueToPropose           int
@@ -18,7 +18,6 @@ type MultiPaxos struct {
 	instances                map[int]*SinglePaxos
 
 	mutex *sync.Mutex
-
 }
 
 func NewMulti() *MultiPaxos {
@@ -50,15 +49,15 @@ func (mp *MultiPaxos) CheckMailbox() {
 		for _, value := range mp.instances {
 
 			select {
-				case y := <- value.MsgInd:
+			case y := <-value.MsgInd:
 
-					target := y.Member
-					y.Member = Members.GetSelf()
-					PaxosMessages.Send(y, target)
-					break
+				target := y.Member
+				y.Member = Members.GetSelf()
+				PaxosMessages.Send(y, target)
+				break
 
-				default:
-					break
+			default:
+				break
 			}
 
 		}
@@ -67,48 +66,47 @@ func (mp *MultiPaxos) CheckMailbox() {
 
 		// Receive Messages from Messages Module
 		select {
-			case y := <- PaxosMessages.Channel:
-				mp.ReceiveMessage(y)
-				break
-			default:
-				break
+		case y := <-PaxosMessages.Channel:
+			mp.ReceiveMessage(y)
+			break
+		default:
+			break
 		}
 	}
 }
 func (mp *MultiPaxos) CheckDecision() {
-
 	for {
 
 		mp.mutex.Lock()
 
 		for number, instance := range mp.instances {
 			select {
-				case y := <- instance.Ind:
+			case y := <-instance.Ind:
 
-					snumber := strconv.Itoa(number)
-					fmt.Println("Decided", y.Values[0], "for instance", snumber)
+				snumber := strconv.Itoa(number)
+				fmt.Println("Decided", y.Values[0], "for instance", snumber)
 
-					/*
-					if y.Values[0] > mp.largestProposedOrDecided {
-						mp.largestProposedOrDecided = y.Values[0]
-					}
+				if y.Values[0] > mp.largestProposedOrDecided {
+					mp.largestProposedOrDecided = number
+				}
 
-					if y.Values[0] < mp.largestProposedOrDecided && y.Values[0] > mp.smallestNonUsed {
-						for i := mp.smallestNonUsed; i < mp.largestProposedOrDecided; i++ {
-							inst, ok := mp.instances[i]
-							if !ok { inst = mp.CreateInstance(i) }
-							if inst.Outcome == -1 {
-								inst.propose = -2
-								inst.hasPropose = true
-							}
+				if number < mp.largestProposedOrDecided && number > mp.smallestNonUsed {
+					for i := mp.smallestNonUsed; i < mp.largestProposedOrDecided; i++ {
+						inst, ok := mp.instances[i]
+						if !ok {
+							inst = mp.CreateInstance(i)
+						}
+						if inst.Outcome == -1 {
+							inst.propose = -2
+							inst.hasPropose = true
 						}
 					}
-					*/
+				}
 
-					break
+				break
 
-				default:
-					break
+			default:
+				break
 			}
 		}
 
@@ -120,15 +118,15 @@ func (mp *MultiPaxos) CheckLeadership() {
 
 	for {
 
-		y := <- mp.omega.Ind
+		y := <-mp.omega.Ind
 
 		mp.mutex.Lock()
 
 		for _, value := range mp.instances {
 
 			message := PaxosMessages.Message{
-				Type : PaxosMessages.Leader,
-				Member : y.Member,
+				Type:   PaxosMessages.Leader,
+				Member: y.Member,
 			}
 
 			value.LeadReq <- message
@@ -143,13 +141,15 @@ func (mp *MultiPaxos) CheckLeadership() {
 func (mp *MultiPaxos) ReceiveMessage(message PaxosMessages.Message) {
 
 	instance, ok := mp.instances[message.Instance]
-	if !ok { instance = mp.CreateInstance(message.Instance) }
+	if !ok {
+		instance = mp.CreateInstance(message.Instance)
+	}
 	instance.MsgReq <- message
 
 }
 func (mp *MultiPaxos) SendMessage(message PaxosMessages.Message, to *Members.Member) {
 
-	PaxosMessages.Send(message, to);
+	PaxosMessages.Send(message, to)
 
 }
 
@@ -168,11 +168,16 @@ func (mp *MultiPaxos) CreateInstance(number int) *SinglePaxos {
 func (mp *MultiPaxos) ProposeValue(value int) {
 
 	instance, ok := mp.instances[mp.smallestNonUsed]
-	if !ok { instance = mp.CreateInstance(mp.smallestNonUsed) }
+	if !ok {
+		instance = mp.CreateInstance(mp.smallestNonUsed)
+	}
+
 	instance.propose = value
 	instance.hasPropose = true
 
 	mp.smallestNonUsed++
-	if mp.smallestNonUsed > mp.largestProposedOrDecided { mp.largestProposedOrDecided = mp.smallestNonUsed }
+	if mp.smallestNonUsed > mp.largestProposedOrDecided {
+		mp.largestProposedOrDecided = mp.smallestNonUsed
+	}
 
 }
