@@ -11,10 +11,11 @@ import "../Members"
 import "../Omega"
 
 type MultiPaxos struct {
-	largestProposedOrDecided int
-	smallestNonUsed          int
+	largestSeen              int
+	gapSafety                int
+
 	valueToPropose           int
-	omega                    Omega.Omega_Module
+	omega                    *Omega.Omega_Module
 	instances                map[int]*SinglePaxos
 
 	mutex *sync.Mutex
@@ -24,8 +25,8 @@ func NewMulti() *MultiPaxos {
 
 	result := MultiPaxos{}
 
-	result.largestProposedOrDecided = -1
-	result.smallestNonUsed = 0
+	result.largestSeen = -1
+	result.gapSafety = 0
 
 	result.instances = make(map[int]*SinglePaxos)
 	result.mutex = &sync.Mutex{}
@@ -84,24 +85,19 @@ func (mp *MultiPaxos) CheckDecision() {
 			case y := <-instance.Ind:
 
 				snumber := strconv.Itoa(number)
-				fmt.Println("Decided", y.Values[0], "for instance", snumber)
+				fmt.Println("Decided", y.Values[0], "for instance", snumber, "👌")
 
-				if y.Values[0] > mp.largestProposedOrDecided {
-					mp.largestProposedOrDecided = number
+				if y.Values[0] >  mp.largestSeen { mp.largestSeen = number }
+
+				for i := mp.gapSafety; i < mp.largestSeen; i++ {
+
+					inst, ok := mp.instances[i]
+					if !ok { inst = mp.CreateInstance(i, false) }
+					if inst.Outcome == -1 { inst.setProposal(-2); }
+
 				}
 
-				if number < mp.largestProposedOrDecided && number > mp.smallestNonUsed {
-					for i := mp.smallestNonUsed; i < mp.largestProposedOrDecided; i++ {
-						inst, ok := mp.instances[i]
-						if !ok {
-							inst = mp.CreateInstance(i)
-						}
-						if inst.Outcome == -1 {
-							inst.propose = -2
-							inst.hasPropose = true
-						}
-					}
-				}
+				mp.gapSafety = mp.largestSeen;
 
 				break
 
@@ -141,9 +137,7 @@ func (mp *MultiPaxos) CheckLeadership() {
 func (mp *MultiPaxos) ReceiveMessage(message PaxosMessages.Message) {
 
 	instance, ok := mp.instances[message.Instance]
-	if !ok {
-		instance = mp.CreateInstance(message.Instance)
-	}
+	if !ok { instance = mp.CreateInstance(message.Instance, true) }
 	instance.MsgReq <- message
 
 }
@@ -153,31 +147,25 @@ func (mp *MultiPaxos) SendMessage(message PaxosMessages.Message, to *Members.Mem
 
 }
 
-func (mp *MultiPaxos) CreateInstance(number int) *SinglePaxos {
+func (mp *MultiPaxos) CreateInstance(number int, lock bool) *SinglePaxos {
 
-	mp.mutex.Lock()
+	if lock { mp.mutex.Lock() }
 
-	instance := NewSingle(number)
+	instance := NewSingle(number, mp.omega.Current)
 	mp.instances[number] = instance
 
-	mp.mutex.Unlock()
+	if number > mp.largestSeen { mp.largestSeen = number }
+
+	if lock { mp.mutex.Unlock() }
 
 	return instance
 
 }
 func (mp *MultiPaxos) ProposeValue(value int) {
 
-	instance, ok := mp.instances[mp.smallestNonUsed]
-	if !ok {
-		instance = mp.CreateInstance(mp.smallestNonUsed)
-	}
+	instance, ok := mp.instances[mp.largestSeen + 1]
+	if !ok { instance = mp.CreateInstance(mp.largestSeen + 1, true) }
 
-	instance.propose = value
-	instance.hasPropose = true
-
-	mp.smallestNonUsed++
-	if mp.smallestNonUsed > mp.largestProposedOrDecided {
-		mp.largestProposedOrDecided = mp.smallestNonUsed
-	}
+	instance.setProposal(value)
 
 }

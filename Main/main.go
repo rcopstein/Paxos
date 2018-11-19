@@ -1,6 +1,8 @@
 package main
 
-import "../Members"
+import (
+	"../Members"
+)
 import "../PaxosMessages"
 import "../Paxos"
 import "strconv"
@@ -45,17 +47,13 @@ func main() {
 	PaxosMessages.Init(Members.GetSelf())
 	mp := Paxos.NewMulti()
 
-	mp.ProposeValue(100 + i)
-	mp.ProposeValue(200 + i)
-	mp.ProposeValue(300 + i)
-	mp.ProposeValue(400 + i)
-	mp.ProposeValue(500 + i)
-	mp.ProposeValue(600 + i)
-	mp.ProposeValue(700 + i)
-	mp.ProposeValue(800 + i)
-	mp.ProposeValue(900 + i)
-	mp.ProposeValue(1000 + i)
+	var value int
 
-	a := make(chan int)
-	for { <- a }
+	for {
+
+		fmt.Scan(&value)
+		mp.ProposeValue(value)
+
+	}
+
 }

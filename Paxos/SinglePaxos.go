@@ -56,7 +56,7 @@ type SinglePaxos struct {
 
 }
 
-func NewSingle(instanceNumber int) *SinglePaxos {
+func NewSingle(instanceNumber int, leader *Members.Member) *SinglePaxos {
 
 	result := SinglePaxos{}
 
@@ -67,7 +67,7 @@ func NewSingle(instanceNumber int) *SinglePaxos {
 	result.MsgReq = make(chan PaxosMessages.Message)
 	result.LeadReq = make(chan PaxosMessages.Message)
 
-	result.leader         = nil
+	result.leader         = leader
 	result.hasPropose     = false
 	result.instanceNumber = instanceNumber
 
@@ -233,7 +233,7 @@ func (sp *SinglePaxos) sendBeginBallot() {
 func (sp *SinglePaxos) succeed() {
 	for {
 		if sp.CurrentStatus == Polling && sp.Outcome == -1 && checkContains(sp.Quorum, sp.Voters) {
-			if (printMessages) { fmt.Println("Decided on", sp.Decree, "!") }
+			if printMessages { fmt.Println("Decided on", sp.Decree, "!") }
 			sp.Outcome = sp.Decree
 
 			message := PaxosMessages.Message{
@@ -249,17 +249,40 @@ func (sp *SinglePaxos) succeed() {
 }
 
 // Auxiliary Methods
-func (sp *SinglePaxos) changeLeader(member *Members.Member) {
+func (sp *SinglePaxos) setProposal(value int) {
 
-	sp.leader = member
+	sp.propose = value
+	sp.hasPropose = true
 
-	if sp.leader.Name == Members.GetSelf().Name && sp.hasPropose && sp.Outcome == -1 {
+	sp.tryPropose()
+
+}
+func (sp *SinglePaxos) tryPropose() {
+
+	if printMessages {
+		fmt.Println(sp.leader)
+		fmt.Println(sp.Outcome)
+		fmt.Println(sp.hasPropose)
+	}
+
+	if sp.leader != nil && sp.leader.Name == Members.GetSelf().Name && sp.hasPropose && sp.Outcome == -1 {
+
+		if printMessages { fmt.Println("Proposing: ", sp.propose) }
 
 		sp.LastTried++
 		sp.CurrentStatus = Trying
 		sp.PrevVotes = sp.PrevVotes[:0]
 
 	}
+
+}
+
+func (sp *SinglePaxos) changeLeader(member *Members.Member) {
+
+	fmt.Println("Leader is", member);
+
+	sp.leader = member
+	sp.tryPropose()
 
 }
 func checkContains(a []*Members.Member, b []*Members.Member) bool {
