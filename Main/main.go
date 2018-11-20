@@ -48,12 +48,6 @@ func main() {
 	mp := Paxos.NewMulti()
 
 	var value int
-
-	for {
-
-		fmt.Scan(&value)
-		mp.ProposeValue(value)
-
-	}
+	for { fmt.Scan(&value); mp.ProposeValue(value) }
 
 }
