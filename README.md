@@ -1,27 +1,27 @@
-# Multi-Paxos, a Copsteinic Approach
+# Paxos
 
-O módulo Multi-Paxos é composto por alguns Sub-Módulos:
-- Os módulos de Paxos decreto único (SinglePaxos)
-- O módulo de escolha de líder (Omega)
-- O módulo de mensagens (P2PLink e PaxosMessages)
-- O módulo controle (Multi-Paxos)
+O mÃ³dulo Multi-Paxos Ã© composto por alguns Sub-MÃ³dulos:
+- Os mÃ³dulos de Paxos decreto Ãºnico (SinglePaxos)
+- O mÃ³dulo de escolha de lÃ­der (Omega)
+- O mÃ³dulo de mensagens (P2PLink e PaxosMessages)
+- O mÃ³dulo controle (Multi-Paxos)
 
-A especificação do módulo segue a especificação do livro Reliable and Secure Distributed Programming.
+A especificaÃ§Ã£o do mÃ³dulo segue a especificaÃ§Ã£o do livro Reliable and Secure Distributed Programming.
 
-## Paxos de decreto único
-O módulo de Paxos de decreto único implementa a especificação do livro.
-O Paxos de decreto único utiliza um canal com o módulo multi-paxos como caixa de correio. Assim, cada instância de paxos decreto único não tem seu próprio módulo de mensagens.
+## Paxos de decreto Ãºnico
+O mÃ³dulo de Paxos de decreto Ãºnico implementa a especificaÃ§Ã£o do livro.
+O Paxos de decreto Ãºnico utiliza um canal com o mÃ³dulo multi-paxos como caixa de correio. Assim, cada instÃ¢ncia de paxos decreto Ãºnico nÃ£o tem seu prÃ³prio mÃ³dulo de mensagens.
 
 ## Omega
-O sub-módulo omega implementa um detector de falhas simulado. O sub-módulo realiza a escolha de líder para cada instância de Multi-paxos.
-Para casos de teste, a função de escolha de líder pode ser definida conforme a conveniência do uso do módulo.
+O sub-mÃ³dulo omega implementa um detector de falhas simulado. O sub-mÃ³dulo realiza a escolha de lÃ­der para cada instÃ¢ncia de Multi-paxos.
+Para casos de teste, a funÃ§Ã£o de escolha de lÃ­der pode ser definida conforme a conveniÃªncia do uso do mÃ³dulo.
 
 ## P2PLink e PaxosMessages
-Utiliza uma pacotes UDP para transmitir as mensagens entre instâncias de módulos Multi-Paxos.
-Cada mensagem trafegada contém informação sobre a instância de Paxos decreto único referida, e é entregue a instância Multi-paxos apropriada, através do seu endereço de rede.
+Utiliza uma pacotes UDP para transmitir as mensagens entre instÃ¢ncias de mÃ³dulos Multi-Paxos.
+Cada mensagem trafegada contÃ©m informaÃ§Ã£o sobre a instÃ¢ncia de Paxos decreto Ãºnico referida, e Ã© entregue a instÃ¢ncia Multi-paxos apropriada, atravÃ©s do seu endereÃ§o de rede.
 
 ## Multipaxos
-O módulo multi-paxos controla e gerencia a criação de instâncias de paxos decreto único.
-Multi-paxos pode propor valores, e caso detecte valores não propostos na sequência de instância de paxos decreto único, corrige estas ausências com valores nulos.
+O mÃ³dulo multi-paxos controla e gerencia a criaÃ§Ã£o de instÃ¢ncias de paxos decreto Ãºnico.
+Multi-paxos pode propor valores, e caso detecte valores nÃ£o propostos na sequÃªncia de instÃ¢ncia de paxos decreto Ãºnico, corrige estas ausÃªncias com valores nulos.
 
-O módulo multi-paxos também controla o módulo de mensagens, servindo como serviço de correio para as instâncias de paxos decreto único.
+O mÃ³dulo multi-paxos tambÃ©m controla o mÃ³dulo de mensagens, servindo como serviÃ§o de correio para as instÃ¢ncias de paxos decreto Ãºnico.
